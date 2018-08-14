@@ -86,9 +86,12 @@ module InstaScrape
       if include_meta_data
         visit(post[:link])
         date = page.find('time')["datetime"]
-        username = page.first("article header div a")["title"]
+        # username = page.first("article header div a")["title"]
+        username = page.first("article header div div div").text
         hi_res_image = page.all("img").last["src"]
-        likes = page.find("div section span span")["innerHTML"]
+        # likes = page.find("div section span span")["innerHTML"]
+        likes = page.all("div section")[1].all("section div a").count
+        likes = page.all("div section")[1].find("div span span")["innerHTML"] if likes == 0
         info = InstaScrape::InstagramPost.new(post[:link], post[:image], {
           date: date,
           text: post[:text],
