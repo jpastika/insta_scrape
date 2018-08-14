@@ -86,9 +86,12 @@ module InstaScrape
       if include_meta_data
         visit(post[:link])
         date = page.find('time')["datetime"]
-        username = page.first("article header div a")["title"]
+        # username = page.first("article header div a")["title"]
+        username = page.first("article header div div div").text
         hi_res_image = page.all("img").last["src"]
-        likes = page.find("div section span span")["innerHTML"]
+        # likes = page.find("div section span span")["innerHTML"]
+        likes = page.all("div section")[1].all("section div a").count
+        likes = page.all("div section")[1].find("div span span")["innerHTML"] if likes == 0
         info = InstaScrape::InstagramPost.new(post[:link], post[:image], {
           date: date,
           text: post[:text],
@@ -120,7 +123,7 @@ module InstaScrape
       @follower_count = get_span_value(follower_count_html)
       following_count_html = page.find('span', :text => "following", exact: true)['innerHTML']
       @following_count = get_span_value(following_count_html)
-      description = page.find('h2').first(:xpath,".//..")['innerHTML']
+      description = page.find(:xpath, '//header/section/div[2]')['innerHTML']
       @description = Nokogiri::HTML(description).text
     end
   end
